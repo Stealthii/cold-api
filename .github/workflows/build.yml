@@ -1,25 +1,54 @@
+---
 name: build
 
 on:
   push:
   schedule:
-    - cron: "10 3 * * *"
+    - cron: 10 3 * * *
+
+permissions:
+  contents: read
+  deployments: write
+  id-token: write
+  pages: write
 
 jobs:
   build:
-    name: Build the site
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
-      - run: |
-          python -m pip install -r requirements.txt
-          python fetch.py
-      - uses: peaceiris/actions-gh-pages@v3
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Fetch Google Storage API
+        run: python fetch.py
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          cname: api.ei.mikit.app
-          enable_jekyll: true
+          source: ./public
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+
+  deploy:
+    needs: build
+    if: ${{github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
