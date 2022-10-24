@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # EI Labo API
 
 EI Labo is providing a static JSON API for some of the data we have collected to support the creation of community-made tools. The API information will be updated once a day around 3:10 AM (UTC).
