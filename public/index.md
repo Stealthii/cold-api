@@ -2,6 +2,8 @@
 
 EI Labo is providing a static JSON API for some of the data we have collected to support the creation of community-made tools. The API information will be updated once a day around 3:10 AM (UTC).
 
+This site was last generated on **{{ site.time | date_to_rfc822 }}**.
+
 ## Generic
 
 - Notation Definition
